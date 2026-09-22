@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>거상 진로상담 체크리스트</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, "Malgun Gothic", "맑은 고딕", sans-serif;
+    color: #222;
+    background: #f3f3f3;
+}
+
+body {
+    overflow: hidden;
+}
+
+/* =========================
+   상단 메뉴
+   ========================= */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 14px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+
+.top-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.output-btn,
+.reset-btn {
+    border: 0;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.output-btn {
+    background: #fff;
+    color: #222;
+}
+
+.reset-btn {
+    background: #d9534f;
+    color: #fff;
+}
+
+/* =========================
+   4분할 화면
+   ========================= */
+.screen {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr)
+                           minmax(360px, 1.35fr)
+                           minmax(320px, 1.15fr)
+                           minmax(380px, 1.5fr);
+    width: 100%;
+    height: calc(100vh - 60px);
+    margin-top: 60px;
+    overflow: hidden;
+}
+
+.panel {
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 14px;
+    border-right: 1px solid #d5d5d5;
+    background: #f7f7f7;
+}
+
+.panel:last-child {
+    border-right: 0;
+    background: #efefef;
+}
+
+.panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+    background: #c3c3c3;
+    border-radius: 8px;
+}
+
+.panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* =========================
+   카테고리
+   ========================= */
+.category {
+    background: #fff;
+    border: 1px solid #d3d3d3;
+    border-radius: 9px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+
+.category h2 {
+    margin: 0 0 12px;
+    padding-bottom: 9px;
+    border-bottom: 2px solid #ededed;
+    font-size: 19px;
+}
+
+.category h3 {
+    margin: 13px 0 7px;
+    font-size: 14px;
+}
+
+.field {
+    margin-bottom: 12px;
+}
+
+.field > label,
+.main-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.text-input,
+textarea,
+.number-input {
+    width: 100%;
+    border: 1px solid #c8c8c8;
+    border-radius: 6px;
+    padding: 9px 10px;
+    font-family: inherit;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+}
+
+.text-input:focus,
+textarea:focus,
+.number-input:focus {
+    border-color: #777;
+}
+
+textarea {
+    min-height: 74px;
+    resize: vertical;
+}
+
+.radio-group,
+.check-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 13px;
+    align-items: center;
+}
+
+.radio-group label,
+.check-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    margin: 0;
+}
+
+/* =========================
+   진법
+   ========================= */
+.formation-row {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    align-items: start;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.formation-name {
+    font-size: 13px;
+    font-weight: 700;
+    padding-top: 2px;
+}
+
+.formation-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 11px;
+}
+
+.formation-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+/* =========================
+   사천왕 / 명왕 입력
+   ========================= */
+.character-box {
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 11px;
+    background: #fff;
+}
+
+.character-box h3 {
+    margin: 0 0 11px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 16px;
+}
+
+.inline-field {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 9px;
+}
+
+.inline-label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.trait-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 12px;
+    margin: 4px 0 10px 0;
+    padding: 9px;
+    background: #f7f7f7;
+    border-radius: 6px;
+}
+
+.trait-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 62px;
+    gap: 6px;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+}
+
+.trait-name {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trait-limit {
+    grid-column: 1 / -1;
+    margin: 1px 0 0;
+    font-size: 11px;
+    color: #666;
+}
+
+.trait-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #c8c8c8;
+    border-radius: 5px;
+    font-family: inherit;
+}
+
+
+/* =========================
+   전설장수
+   ========================= */
+.legend-group {
+    background: #fff;
+    border: 1px solid #d3d3d3;
+    border-radius: 9px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.legend-group h3 {
+    margin: 0 0 9px;
+    padding-bottom: 7px;
+    border-bottom: 2px solid #ededed;
+    font-size: 15px;
+}
+
+.legend-checks {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.legend-checks label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.legend-input {
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.legend-input-title {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+/* =========================
+   결과 영역
+   ========================= */
+.result-panel {
+    padding: 14px;
+}
+
+.result-title {
+    margin: 0 0 10px;
+    font-size: 20px;
+}
+
+.result-buttons {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+.copy-btn,
+.image-btn {
+    border: 0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.copy-btn {
+    background: #333;
+    color: #fff;
+}
+
+.image-btn {
+    background: #777;
+    color: #fff;
+}
+
+#checklist-export {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 9px;
+    padding: 10px;
+    min-height: 100px;
+}
+
+/*
+ * 중요:
+ * 결과 내부에서는 flex/grid로 라벨과 값을 떨어뜨리지 않습니다.
+ * 한 줄 항목은 하나의 inline 문장으로 출력합니다.
+ */
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-items: start;
+}
+
+.result-card {
+    background: #fff;
+    border: 1px solid #d2d2d2;
+    border-radius: 8px;
+    padding: 12px;
+    min-width: 0;
+}
+
+.result-card h3 {
+    margin: 0 0 9px;
+    padding-bottom: 7px;
+    border-bottom: 2px solid #ededed;
+    font-size: 17px;
+}
+
+.result-subcard {
+    border: 1px solid #d7d7d7;
+    border-radius: 7px;
+    padding: 10px;
+    margin-top: 8px;
+}
+
+.result-subcard h4 {
+    margin: 0 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 15px;
+}
+
+/* 핵심 출력 줄 */
+.check-row {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 6px 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    line-height: 1.45;
+    box-sizing: border-box !important;
+}
+
+.check-label {
+    display: inline !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: left !important;
+}
+
+.check-value {
+    display: inline !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: 400;
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left !important;
+}
+
+/* 상담 이유 */
+.check-reason {
+    display: block !important;
+    width: 100% !important;
+    margin: 11px 0 0 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+}
+
+.check-reason-label {
+    display: block !important;
+    margin: 0 0 5px 0 !important;
+    padding: 0 !important;
+    font-weight: 700;
+    text-align: left !important;
+}
+
+.check-reason-value {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.45;
+}
+
+.empty-result {
+    margin: 10px 4px;
+    color: #777;
+    font-size: 13px;
+}
+
+/* 전설장수 속성 결과 */
+.legend-result-group {
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.legend-result-group:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.legend-result-title {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+/* =========================
+   반응형
+   ========================= */
+@media (max-width: 1500px) {
+    .screen {
+        grid-template-columns: minmax(240px, 0.95fr)
+                           minmax(330px, 1.2fr)
+                           minmax(300px, 1.05fr)
+                           minmax(360px, 1.35fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    body {
+        overflow: auto;
+    }
+
+    .screen {
+        height: auto;
+        min-height: calc(100vh - 60px);
+        grid-template-columns: 1fr 1fr;
+        overflow: visible;
+    }
+
+    .panel {
+        min-height: 500px;
+    }
+
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .screen {
+        grid-template-columns: 1fr;
+    }
+
+    .panel {
+        min-height: auto;
+        max-height: none;
+        border-right: 0;
+        border-bottom: 1px solid #d5d5d5;
+    }
+
+    .legend-checks {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+    <div class="top-buttons">
+        <button class="output-btn" onclick="makeResult()">출력하기</button>
+        <button class="reset-btn" onclick="resetAll()">초기화</button>
+    </div>
+</div>
+
+<div class="screen">
+
+    <!-- =========================
+         1번 화면
+         본캐 / 정령 / 진법 / 가호
+         ========================= -->
+    <div class="panel">
+
+        <div class="category">
+            <h2>① 본캐</h2>
+
+            <div class="field">
+                <label for="main-name">캐릭터명</label>
+                <input id="main-name" class="text-input" type="text" placeholder="예) 뱀뚜">
+            </div>
+
+            <div class="field">
+                <label for="main-level">Level</label>
+                <input id="main-level" class="text-input" type="text" inputmode="numeric" placeholder="예) 255">
+            </div>
+
+            <div class="field">
+                <label>
+                    <input id="training-book" type="checkbox">
+                    거상 수련서
+                </label>
+            </div>
+
+            <div class="field">
+                <span class="main-label">국적</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="nationality" value="중국"> 중국</label>
+                    <label><input type="radio" name="nationality" value="대만"> 대만</label>
+                    <label><input type="radio" name="nationality" value="일본"> 일본</label>
+                    <label><input type="radio" name="nationality" value="조선"> 조선</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="consult-reason">진로상담 신청이유</label>
+                <textarea id="consult-reason" placeholder="진로상담을 신청한 이유를 자유롭게 입력하세요."></textarea>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2>② 정령</h2>
+
+            <div class="field">
+                <span class="main-label">불의정령</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="fire-spirit" value="전설"> 전설</label>
+                    <label><input type="radio" name="fire-spirit" value="최상급"> 최상급</label>
+                    <label><input type="radio" name="fire-spirit" value="상급"> 상급</label>
+                    <label><input type="radio" name="fire-spirit" value="중급"> 중급</label>
+                    <label><input type="radio" name="fire-spirit" value="하급"> 하급</label>
+                    <label><input type="radio" name="fire-spirit" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <span class="main-label">물의정령</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="water-spirit" value="전설"> 전설</label>
+                    <label><input type="radio" name="water-spirit" value="최상급"> 최상급</label>
+                    <label><input type="radio" name="water-spirit" value="상급"> 상급</label>
+                    <label><input type="radio" name="water-spirit" value="중급"> 중급</label>
+                    <label><input type="radio" name="water-spirit" value="하급"> 하급</label>
+                    <label><input type="radio" name="water-spirit" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <span class="main-label">땅의정령</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="earth-spirit" value="전설"> 전설</label>
+                    <label><input type="radio" name="earth-spirit" value="최상급"> 최상급</label>
+                    <label><input type="radio" name="earth-spirit" value="상급"> 상급</label>
+                    <label><input type="radio" name="earth-spirit" value="중급"> 중급</label>
+                    <label><input type="radio" name="earth-spirit" value="하급"> 하급</label>
+                    <label><input type="radio" name="earth-spirit" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <span class="main-label">뇌의정령</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="thunder-spirit" value="전설"> 전설</label>
+                    <label><input type="radio" name="thunder-spirit" value="최상급"> 최상급</label>
+                    <label><input type="radio" name="thunder-spirit" value="상급"> 상급</label>
+                    <label><input type="radio" name="thunder-spirit" value="중급"> 중급</label>
+                    <label><input type="radio" name="thunder-spirit" value="하급"> 하급</label>
+                    <label><input type="radio" name="thunder-spirit" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <span class="main-label">바람의정령</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="wind-spirit" value="전설"> 전설</label>
+                    <label><input type="radio" name="wind-spirit" value="최상급"> 최상급</label>
+                    <label><input type="radio" name="wind-spirit" value="상급"> 상급</label>
+                    <label><input type="radio" name="wind-spirit" value="중급"> 중급</label>
+                    <label><input type="radio" name="wind-spirit" value="하급"> 하급</label>
+                    <label><input type="radio" name="wind-spirit" value="없음"> 없음</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2>③ 진법</h2>
+
+            <div class="formation-row">
+                <div class="formation-name">불의진법</div>
+                <div class="formation-options">
+                    <label><input type="radio" name="fire-formation" value="5강"> 5강</label>
+                    <label><input type="radio" name="fire-formation" value="10강"> 10강</label>
+                    <label><input type="radio" name="fire-formation" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="formation-row">
+                <div class="formation-name">물의진법</div>
+                <div class="formation-options">
+                    <label><input type="radio" name="water-formation" value="5강"> 5강</label>
+                    <label><input type="radio" name="water-formation" value="10강"> 10강</label>
+                    <label><input type="radio" name="water-formation" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="formation-row">
+                <div class="formation-name">뇌의진법</div>
+                <div class="formation-options">
+                    <label><input type="radio" name="thunder-formation" value="5강"> 5강</label>
+                    <label><input type="radio" name="thunder-formation" value="10강"> 10강</label>
+                    <label><input type="radio" name="thunder-formation" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="formation-row">
+                <div class="formation-name">풍의진법</div>
+                <div class="formation-options">
+                    <label><input type="radio" name="wind-formation" value="5강"> 5강</label>
+                    <label><input type="radio" name="wind-formation" value="10강"> 10강</label>
+                    <label><input type="radio" name="wind-formation" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="formation-row">
+                <div class="formation-name">층진</div>
+                <div class="formation-options">
+                    <label><input type="radio" name="cheung-formation" value="5강"> 5강</label>
+                    <label><input type="radio" name="cheung-formation" value="10강"> 10강</label>
+                    <label><input type="radio" name="cheung-formation" value="없음"> 없음</label>
+                </div>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+                <label>
+                    <input id="no-element-formation" type="checkbox">
+                    속성진법 없음
+                </label>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2>④ 가호</h2>
+
+            <div class="field">
+                <div class="radio-group">
+                    <label><input type="radio" name="blessing" value="없음"> 없음</label>
+                    <label><input type="radio" name="blessing" value="16"> 16</label>
+                    <label><input type="radio" name="blessing" value="21"> 21</label>
+                    <label><input type="radio" name="blessing" value="입력"> 입력</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="blessing-custom">직접 입력</label>
+                <input id="blessing-custom" class="text-input" type="text" inputmode="numeric" placeholder="예) 20">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =========================
+         2번 화면
+         사천왕 / 명왕
+         ========================= -->
+    <div class="panel">
+
+        <div class="category">
+            <h2>⑤ 사천왕</h2>
+
+            <div class="character-box">
+                <h3>지국천왕</h3>
+
+                <div class="inline-field">
+                    <div class="inline-label">Level</div>
+                    <input id="jikuk-level" class="text-input" type="text" inputmode="numeric">
+                </div>
+
+                <div class="field">
+                    <span class="main-label">상태</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jikuk-status" value="각성" onchange="renderTraits('jikuk')"> 각성</label>
+                        <label><input type="radio" name="jikuk-status" value="일반" onchange="renderTraits('jikuk')"> 일반</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">무기보유</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jikuk-weapon" value="각성"> 각성</label>
+                        <label><input type="radio" name="jikuk-weapon" value="고급"> 고급</label>
+                        <label><input type="radio" name="jikuk-weapon" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">사천왕부</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jikuk-item" value="각성"> 각성</label>
+                        <label><input type="radio" name="jikuk-item" value="일반"> 일반</label>
+                        <label><input type="radio" name="jikuk-item" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">별자리</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jikuk-star" value="100셋" onchange="renderStarInput('jikuk')"> 100셋</label>
+                        <label><input type="radio" name="jikuk-star" value="입력" onchange="renderStarInput('jikuk')"> 입력</label>
+                        <label><input type="radio" name="jikuk-star" value="없음" onchange="renderStarInput('jikuk')"> 없음</label>
+                    </div>
+                </div>
+
+                <div id="jikuk-special" class="trait-container" style="display:none;"></div>
+
+                <div id="jikuk-star-input-wrap" class="field" style="display:none;">
+                    <label for="jikuk-star-input">별자리 직접입력</label>
+                    <input id="jikuk-star-input" class="text-input" type="text" placeholder="예) 80셋">
+                </div>
+
+                <div class="field">
+                    <label for="jikuk-equipment">착용장비</label>
+                    <input id="jikuk-equipment" class="text-input" type="text" placeholder="예) 천라갑투, 변지국">
+                </div>
+            </div>
+
+            <div class="character-box">
+                <h3>다문천왕</h3>
+
+                <div class="inline-field">
+                    <div class="inline-label">Level</div>
+                    <input id="damun-level" class="text-input" type="text" inputmode="numeric">
+                </div>
+
+                <div class="field">
+                    <span class="main-label">상태</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="damun-status" value="각성" onchange="renderTraits('damun')"> 각성</label>
+                        <label><input type="radio" name="damun-status" value="일반" onchange="renderTraits('damun')"> 일반</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">무기보유</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="damun-weapon" value="각성"> 각성</label>
+                        <label><input type="radio" name="damun-weapon" value="고급"> 고급</label>
+                        <label><input type="radio" name="damun-weapon" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">사천왕부</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="damun-item" value="각성"> 각성</label>
+                        <label><input type="radio" name="damun-item" value="일반"> 일반</label>
+                        <label><input type="radio" name="damun-item" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">별자리</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="damun-star" value="100셋" onchange="renderStarInput('damun')"> 100셋</label>
+                        <label><input type="radio" name="damun-star" value="입력" onchange="renderStarInput('damun')"> 입력</label>
+                        <label><input type="radio" name="damun-star" value="없음" onchange="renderStarInput('damun')"> 없음</label>
+                    </div>
+                </div>
+
+                <div id="damun-special" class="trait-container" style="display:none;"></div>
+
+                <div id="damun-star-input-wrap" class="field" style="display:none;">
+                    <label for="damun-star-input">별자리 직접입력</label>
+                    <input id="damun-star-input" class="text-input" type="text" placeholder="예) 80셋">
+                </div>
+
+                <div class="field">
+                    <label for="damun-equipment">착용장비</label>
+                    <input id="damun-equipment" class="text-input" type="text" placeholder="예) 다문부, 변지국">
+                </div>
+            </div>
+
+            <div class="character-box">
+                <h3>증장천왕</h3>
+
+                <div class="inline-field">
+                    <div class="inline-label">Level</div>
+                    <input id="jeungjang-level" class="text-input" type="text" inputmode="numeric">
+                </div>
+
+                <div class="field">
+                    <span class="main-label">상태</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jeungjang-status" value="각성" onchange="renderTraits('jeungjang')"> 각성</label>
+                        <label><input type="radio" name="jeungjang-status" value="일반" onchange="renderTraits('jeungjang')"> 일반</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">무기보유</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jeungjang-weapon" value="각성"> 각성</label>
+                        <label><input type="radio" name="jeungjang-weapon" value="고급"> 고급</label>
+                        <label><input type="radio" name="jeungjang-weapon" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">사천왕부</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jeungjang-item" value="각성"> 각성</label>
+                        <label><input type="radio" name="jeungjang-item" value="일반"> 일반</label>
+                        <label><input type="radio" name="jeungjang-item" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">별자리</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="jeungjang-star" value="100셋" onchange="renderStarInput('jeungjang')"> 100셋</label>
+                        <label><input type="radio" name="jeungjang-star" value="입력" onchange="renderStarInput('jeungjang')"> 입력</label>
+                        <label><input type="radio" name="jeungjang-star" value="없음" onchange="renderStarInput('jeungjang')"> 없음</label>
+                    </div>
+                </div>
+
+                <div id="jeungjang-special" class="trait-container" style="display:none;"></div>
+
+                <div id="jeungjang-star-input-wrap" class="field" style="display:none;">
+                    <label for="jeungjang-star-input">별자리 직접입력</label>
+                    <input id="jeungjang-star-input" class="text-input" type="text" placeholder="예) 80셋">
+                </div>
+
+                <div class="field">
+                    <label for="jeungjang-equipment">착용장비</label>
+                    <input id="jeungjang-equipment" class="text-input" type="text" placeholder="예) 증장부, 변지국">
+                </div>
+            </div>
+
+            <div class="character-box">
+                <h3>광목천왕</h3>
+
+                <div class="inline-field">
+                    <div class="inline-label">Level</div>
+                    <input id="gwangmok-level" class="text-input" type="text" inputmode="numeric">
+                </div>
+
+                <div class="field">
+                    <span class="main-label">상태</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gwangmok-status" value="각성" onchange="renderTraits('gwangmok')"> 각성</label>
+                        <label><input type="radio" name="gwangmok-status" value="일반" onchange="renderTraits('gwangmok')"> 일반</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">무기보유</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gwangmok-weapon" value="각성"> 각성</label>
+                        <label><input type="radio" name="gwangmok-weapon" value="고급"> 고급</label>
+                        <label><input type="radio" name="gwangmok-weapon" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">사천왕부</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gwangmok-item" value="각성"> 각성</label>
+                        <label><input type="radio" name="gwangmok-item" value="일반"> 일반</label>
+                        <label><input type="radio" name="gwangmok-item" value="없음"> 없음</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <span class="main-label">별자리</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gwangmok-star" value="100셋" onchange="renderStarInput('gwangmok')"> 100셋</label>
+                        <label><input type="radio" name="gwangmok-star" value="입력" onchange="renderStarInput('gwangmok')"> 입력</label>
+                        <label><input type="radio" name="gwangmok-star" value="없음" onchange="renderStarInput('gwangmok')"> 없음</label>
+                    </div>
+                </div>
+
+                <div id="gwangmok-special" class="trait-container" style="display:none;"></div>
+
+                <div id="gwangmok-star-input-wrap" class="field" style="display:none;">
+                    <label for="gwangmok-star-input">별자리 직접입력</label>
+                    <input id="gwangmok-star-input" class="text-input" type="text" placeholder="예) 80셋">
+                </div>
+
+                <div class="field">
+                    <label for="gwangmok-equipment">착용장비</label>
+                    <input id="gwangmok-equipment" class="text-input" type="text" placeholder="예) 광목부, 변지국">
+                </div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2>⑥ 명왕</h2>
+
+            <div class="character-box">
+                <h3>항삼세명왕</h3>
+                <div class="inline-field"><div class="inline-label">Level</div><input id="hangsamse-level" class="text-input" type="text" inputmode="numeric"></div>
+                <div class="field"><span class="main-label">상태</span><div class="radio-group">
+                    <label><input type="radio" name="hangsamse-status" value="각성" onchange="renderTraits('hangsamse')"> 각성</label>
+                    <label><input type="radio" name="hangsamse-status" value="일반" onchange="renderTraits('hangsamse')"> 일반</label>
+                    <label><input type="radio" name="hangsamse-status" value="없음" onchange="renderTraits('hangsamse')"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">무기보유</span><div class="radio-group">
+                    <label><input type="radio" name="hangsamse-weapon" value="각성"> 각성</label>
+                    <label><input type="radio" name="hangsamse-weapon" value="고급"> 고급</label>
+                    <label><input type="radio" name="hangsamse-weapon" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">명왕부</span><div class="radio-group">
+                    <label><input type="radio" name="hangsamse-item" value="각성"> 각성</label>
+                    <label><input type="radio" name="hangsamse-item" value="일반"> 일반</label>
+                    <label><input type="radio" name="hangsamse-item" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">별자리</span><div class="radio-group">
+                    <label><input type="radio" name="hangsamse-star" value="100셋" onchange="renderStarInput('hangsamse')"> 100셋</label>
+                    <label><input type="radio" name="hangsamse-star" value="입력" onchange="renderStarInput('hangsamse')"> 입력</label>
+                    <label><input type="radio" name="hangsamse-star" value="없음" onchange="renderStarInput('hangsamse')"> 없음</label>
+                </div></div>
+                <div id="hangsamse-special" class="trait-container" style="display:none;"></div>
+                <div id="hangsamse-star-input-wrap" class="field" style="display:none;">
+                    <label for="hangsamse-star-input">별자리 직접입력</label>
+                    <input id="hangsamse-star-input" class="text-input" type="text" placeholder="예) 80셋">
+                </div>
+                <div class="field"><label for="hangsamse-equipment">착용장비</label><input id="hangsamse-equipment" class="text-input" type="text"></div>
+            </div>
+
+            <div class="character-box">
+                <h3>금강야차명왕</h3>
+                <div class="inline-field"><div class="inline-label">Level</div><input id="geumgang-level" class="text-input" type="text" inputmode="numeric"></div>
+                <div class="field"><span class="main-label">상태</span><div class="radio-group">
+                    <label><input type="radio" name="geumgang-status" value="각성" onchange="renderTraits('geumgang')"> 각성</label>
+                    <label><input type="radio" name="geumgang-status" value="일반" onchange="renderTraits('geumgang')"> 일반</label>
+                    <label><input type="radio" name="geumgang-status" value="없음" onchange="renderTraits('geumgang')"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">무기보유</span><div class="radio-group">
+                    <label><input type="radio" name="geumgang-weapon" value="각성"> 각성</label>
+                    <label><input type="radio" name="geumgang-weapon" value="고급"> 고급</label>
+                    <label><input type="radio" name="geumgang-weapon" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">명왕부</span><div class="radio-group">
+                    <label><input type="radio" name="geumgang-item" value="각성"> 각성</label>
+                    <label><input type="radio" name="geumgang-item" value="일반"> 일반</label>
+                    <label><input type="radio" name="geumgang-item" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">별자리</span><div class="radio-group">
+                    <label><input type="radio" name="geumgang-star" value="100셋" onchange="renderStarInput('geumgang')"> 100셋</label>
+                    <label><input type="radio" name="geumgang-star" value="입력" onchange="renderStarInput('geumgang')"> 입력</label>
+                    <label><input type="radio" name="geumgang-star" value="없음" onchange="renderStarInput('geumgang')"> 없음</label>
+                </div></div>
+                <div id="geumgang-special" class="trait-container" style="display:none;"></div>
+                <div id="geumgang-star-input-wrap" class="field" style="display:none;">
+                    <label for="geumgang-star-input">별자리 직접입력</label>
+                    <input id="geumgang-star-input" class="text-input" type="text">
+                </div>
+                <div class="field"><label for="geumgang-equipment">착용장비</label><input id="geumgang-equipment" class="text-input" type="text"></div>
+            </div>
+
+            <div class="character-box">
+                <h3>군다리명왕</h3>
+                <div class="inline-field"><div class="inline-label">Level</div><input id="gundari-level" class="text-input" type="text" inputmode="numeric"></div>
+                <div class="field"><span class="main-label">상태</span><div class="radio-group">
+                    <label><input type="radio" name="gundari-status" value="각성" onchange="renderTraits('gundari')"> 각성</label>
+                    <label><input type="radio" name="gundari-status" value="일반" onchange="renderTraits('gundari')"> 일반</label>
+                    <label><input type="radio" name="gundari-status" value="없음" onchange="renderTraits('gundari')"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">무기보유</span><div class="radio-group">
+                    <label><input type="radio" name="gundari-weapon" value="각성"> 각성</label>
+                    <label><input type="radio" name="gundari-weapon" value="고급"> 고급</label>
+                    <label><input type="radio" name="gundari-weapon" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">명왕부</span><div class="radio-group">
+                    <label><input type="radio" name="gundari-item" value="각성"> 각성</label>
+                    <label><input type="radio" name="gundari-item" value="일반"> 일반</label>
+                    <label><input type="radio" name="gundari-item" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">별자리</span><div class="radio-group">
+                    <label><input type="radio" name="gundari-star" value="100셋" onchange="renderStarInput('gundari')"> 100셋</label>
+                    <label><input type="radio" name="gundari-star" value="입력" onchange="renderStarInput('gundari')"> 입력</label>
+                    <label><input type="radio" name="gundari-star" value="없음" onchange="renderStarInput('gundari')"> 없음</label>
+                </div></div>
+                <div id="gundari-special" class="trait-container" style="display:none;"></div>
+                <div id="gundari-star-input-wrap" class="field" style="display:none;">
+                    <label for="gundari-star-input">별자리 직접입력</label>
+                    <input id="gundari-star-input" class="text-input" type="text">
+                </div>
+                <div class="field"><label for="gundari-equipment">착용장비</label><input id="gundari-equipment" class="text-input" type="text"></div>
+            </div>
+
+            <div class="character-box">
+                <h3>대위덕명왕</h3>
+                <div class="inline-field"><div class="inline-label">Level</div><input id="daewideok-level" class="text-input" type="text" inputmode="numeric"></div>
+                <div class="field"><span class="main-label">상태</span><div class="radio-group">
+                    <label><input type="radio" name="daewideok-status" value="각성" onchange="renderTraits('daewideok')"> 각성</label>
+                    <label><input type="radio" name="daewideok-status" value="일반" onchange="renderTraits('daewideok')"> 일반</label>
+                    <label><input type="radio" name="daewideok-status" value="없음" onchange="renderTraits('daewideok')"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">무기보유</span><div class="radio-group">
+                    <label><input type="radio" name="daewideok-weapon" value="각성"> 각성</label>
+                    <label><input type="radio" name="daewideok-weapon" value="고급"> 고급</label>
+                    <label><input type="radio" name="daewideok-weapon" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">명왕부</span><div class="radio-group">
+                    <label><input type="radio" name="daewideok-item" value="각성"> 각성</label>
+                    <label><input type="radio" name="daewideok-item" value="일반"> 일반</label>
+                    <label><input type="radio" name="daewideok-item" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">별자리</span><div class="radio-group">
+                    <label><input type="radio" name="daewideok-star" value="100셋" onchange="renderStarInput('daewideok')"> 100셋</label>
+                    <label><input type="radio" name="daewideok-star" value="입력" onchange="renderStarInput('daewideok')"> 입력</label>
+                    <label><input type="radio" name="daewideok-star" value="없음" onchange="renderStarInput('daewideok')"> 없음</label>
+                </div></div>
+                <div id="daewideok-special" class="trait-container" style="display:none;"></div>
+                <div id="daewideok-star-input-wrap" class="field" style="display:none;">
+                    <label for="daewideok-star-input">별자리 직접입력</label>
+                    <input id="daewideok-star-input" class="text-input" type="text">
+                </div>
+                <div class="field"><label for="daewideok-equipment">착용장비</label><input id="daewideok-equipment" class="text-input" type="text"></div>
+            </div>
+
+            <div class="character-box">
+                <h3>부동명왕</h3>
+                <div class="inline-field"><div class="inline-label">Level</div><input id="budong-level" class="text-input" type="text" inputmode="numeric"></div>
+                <div class="field"><span class="main-label">상태</span><div class="radio-group">
+                    <label><input type="radio" name="budong-status" value="각성" onchange="renderTraits('budong')"> 각성</label>
+                    <label><input type="radio" name="budong-status" value="일반" onchange="renderTraits('budong')"> 일반</label>
+                    <label><input type="radio" name="budong-status" value="없음" onchange="renderTraits('budong')"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">무기보유</span><div class="radio-group">
+                    <label><input type="radio" name="budong-weapon" value="각성"> 각성</label>
+                    <label><input type="radio" name="budong-weapon" value="고급"> 고급</label>
+                    <label><input type="radio" name="budong-weapon" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">명왕부</span><div class="radio-group">
+                    <label><input type="radio" name="budong-item" value="각성"> 각성</label>
+                    <label><input type="radio" name="budong-item" value="일반"> 일반</label>
+                    <label><input type="radio" name="budong-item" value="없음"> 없음</label>
+                </div></div>
+                <div class="field"><span class="main-label">별자리</span><div class="radio-group">
+                    <label><input type="radio" name="budong-star" value="100셋" onchange="renderStarInput('budong')"> 100셋</label>
+                    <label><input type="radio" name="budong-star" value="입력" onchange="renderStarInput('budong')"> 입력</label>
+                    <label><input type="radio" name="budong-star" value="없음" onchange="renderStarInput('budong')"> 없음</label>
+                </div></div>
+                <div id="budong-special" class="trait-container" style="display:none;"></div>
+                <div id="budong-star-input-wrap" class="field" style="display:none;">
+                    <label for="budong-star-input">별자리 직접입력</label>
+                    <input id="budong-star-input" class="text-input" type="text">
+                </div>
+                <div class="field"><label for="budong-equipment">착용장비</label><input id="budong-equipment" class="text-input" type="text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================
+         3번 화면
+         전설장수
+         ========================= -->
+    <div class="panel">
+
+        <div class="category">
+            <h2>⑦ 전설장수</h2>
+            <p style="font-size:12px;color:#666;margin-top:-4px;">
+                체크한 장수만 아래에 입력칸이 생성됩니다.
+            </p>
+        </div>
+
+        <div class="legend-group">
+            <h3>🔥 火속성</h3>
+            <div class="legend-checks">
+                <label><input type="checkbox" class="legend-toggle" data-prefix="choimuseon" data-name="도령 최무선" data-element="火"> 도령 최무선</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="yeopo" data-name="봉선 여포" data-element="火"> 봉선 여포</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="nobutsuna" data-name="군신 노부츠나" data-element="火"> 군신 노부츠나</label>
+            </div>
+            <div id="legend-inputs-fire"></div>
+        </div>
+
+        <div class="legend-group">
+            <h3>💧 水속성</h3>
+            <div class="legend-checks">
+                <label><input type="checkbox" class="legend-toggle" data-prefix="majo" data-name="해신 마조" data-element="水"> 해신 마조</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="choseon" data-name="무희 초선" data-element="水"> 무희 초선</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="chiyome" data-name="모치즈키 치요메" data-element="水"> 모치즈키 치요메</label>
+            </div>
+            <div id="legend-inputs-water"></div>
+        </div>
+
+        <div class="legend-group">
+            <h3>⚡ 雷속성</h3>
+            <div class="legend-checks">
+                <label><input type="checkbox" class="legend-toggle" data-prefix="hwamokran" data-name="여걸 화목란" data-element="雷"> 여걸 화목란</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="jumong" data-name="신궁 주몽" data-element="雷"> 신궁 주몽</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="manseonya" data-name="선인 만선야" data-element="雷"> 선인 만선야</label>
+            </div>
+            <div id="legend-inputs-thunder"></div>
+        </div>
+
+        <div class="legend-group">
+            <h3>🌪 風속성</h3>
+            <div class="legend-checks">
+                <label><input type="checkbox" class="legend-toggle" data-prefix="honggildong" data-name="도사 홍길동" data-element="風"> 도사 홍길동</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="maenghoik" data-name="야왕 맹획" data-element="風"> 야왕 맹획</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="bokuten" data-name="검성 보쿠텐" data-element="風"> 검성 보쿠텐</label>
+            </div>
+            <div id="legend-inputs-wind"></div>
+        </div>
+
+        <div class="legend-group">
+            <h3>⛰ 地속성</h3>
+            <div class="legend-checks">
+                <label><input type="checkbox" class="legend-toggle" data-prefix="bajirao" data-name="재상 바지라오" data-element="地"> 재상 바지라오</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="regina" data-name="레지나 술타나" data-element="地"> 레지나 술타나</label>
+                <label><input type="checkbox" class="legend-toggle" data-prefix="akbar" data-name="악바르 대제" data-element="地"> 악바르 대제</label>
+            </div>
+            <div id="legend-inputs-earth"></div>
+        </div>
+
+    </div>
+
+    <!-- =========================
+         4번 화면
+         결과
+         ========================= -->
+    <div class="panel result-panel">
+        <h2 class="result-title">진로상담 체크리스트</h2>
+
+        <div class="result-buttons">
+            <button class="copy-btn" onclick="copyChecklist()">내용 복사</button>
+            <button class="image-btn" onclick="saveChecklistImage()">이미지 저장</button>
+        </div>
+
+        <div id="checklist-export">
+            <div id="result">
+                <p class="empty-result">선택 후 상단의 출력하기 버튼을 눌러주세요.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* =========================================================
+   데이터
+   ========================================================= */
+
+const traitData = {
+    jikuk: {
+        name: "지국천왕",
+        awakened: ["겁화", "경안", "화상", "층화"],
+        normal: ["겁화", "화상"]
+    },
+    damun: {
+        name: "다문천왕",
+        awakened: ["강화", "안식", "집중", "전심"],
+        normal: ["강화", "집중"]
+    },
+    jeungjang: {
+        name: "증장천왕",
+        awakened: ["감전", "충격파", "전폭", "원격"],
+        normal: ["감전", "충격"]
+    },
+    gwangmok: {
+        name: "광목천왕",
+        awakened: ["광풍", "연파", "충돌", "신보"],
+        normal: ["충돌", "광풍"]
+    },
+
+    hangsamse: {
+        name: "항삼세명왕",
+        awakened: ["화신", "파괴", "잠식", "어령"],
+        normal: ["화신", "파괴"]
+    },
+    geumgang: {
+        name: "금강야차명왕",
+        awakened: ["신비", "영벽", "가호", "격노"],
+        normal: ["가호", "신비"]
+    },
+    gundari: {
+        name: "군다리명왕",
+        awakened: ["신속", "쇄도", "우뢰", "낙인"],
+        normal: ["우뢰", "신속"]
+    },
+    daewideok: {
+        name: "대위덕명왕",
+        awakened: ["끈기", "돌풍", "영속", "분천"],
+        normal: ["돌풍", "끈기"]
+    },
+    budong: {
+        name: "부동명왕",
+        awakened: ["미정", "미정", "미정", "미정"],
+        normal: ["압박", "집중"]
+    }
+};
+
+const legendGroups = {
+    "火": "legend-inputs-fire",
+    "水": "legend-inputs-water",
+    "雷": "legend-inputs-thunder",
+    "風": "legend-inputs-wind",
+    "地": "legend-inputs-earth"
+};
+
+const legendData = {};
+
+document.querySelectorAll(".legend-toggle").forEach(toggle => {
+    const prefix = toggle.dataset.prefix;
+    legendData[prefix] = {
+        name: toggle.dataset.name,
+        element: toggle.dataset.element
+    };
+
+    toggle.addEventListener("change", () => {
+        renderLegendInput(toggle);
+    });
+});
+
+/* =========================================================
+   공통 함수
+   ========================================================= */
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function getRadioValue(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    return checked ? checked.value : "";
+}
+
+function getValue(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+}
+
+function makeRow(label, value) {
+    if (value === null || value === undefined || String(value).trim() === "") {
+        return "";
+    }
+
+    return `
+        <div class="check-row">
+            <span class="check-label">${escapeHtml(label)} :</span>
+            <span class="check-value"> ${escapeHtml(value)}</span>
+        </div>
+    `;
+}
+
+function makeReason(label, value) {
+    if (!value || !value.trim()) return "";
+
+    return `
+        <div class="check-reason">
+            <div class="check-reason-label">${escapeHtml(label)} :</div>
+            <div class="check-reason-value">${escapeHtml(value)}</div>
+        </div>
+    `;
+}
+
+/* =========================================================
+   특성 입력
+   각성: 개별 최대 5 / 총합 최대 12
+   일반: 개별 최대 10 / 총합 최대 17
+   ========================================================= */
+
+function renderStarInput(prefix) {
+    const wrap = document.getElementById(`${prefix}-star-input-wrap`);
+    if (!wrap) return;
+
+    const starType = getRadioValue(`${prefix}-star`);
+    wrap.style.display = starType === "입력" ? "block" : "none";
+}
+
+function renderTraits(prefix) {
+    const container = document.getElementById(`${prefix}-special`);
+    if (!container) return;
+
+    const status = getRadioValue(`${prefix}-status`);
+
+    if (status !== "각성" && status !== "일반") {
+        container.style.display = "none";
+        container.innerHTML = "";
+        return;
+    }
+
+    const data = traitData[prefix];
+    const traits = status === "각성" ? data.awakened : data.normal;
+    const maxEach = status === "각성" ? 5 : 10;
+    const maxTotal = status === "각성" ? 12 : 17;
+
+    container.style.display = "grid";
+
+    container.innerHTML = `
+        ${traits.map((trait, index) => `
+            <div class="trait-row">
+                <div class="trait-name">${escapeHtml(trait)}</div>
+                <input
+                    type="number"
+                    class="trait-input"
+                    id="${prefix}-trait-${index}"
+                    min="0"
+                    max="${maxEach}"
+                    step="1"
+                    value="0"
+                    data-prefix="${prefix}"
+                    data-limit="${maxTotal}"
+                >
+            </div>
+        `).join("")}
+        <div class="trait-limit">
+            ${status} 특성 · 개별 최대 ${maxEach} · 총합 최대 ${maxTotal}
+        </div>
+    `;
+
+    container.querySelectorAll(".trait-input").forEach(input => {
+        input.addEventListener("input", () => enforceTraitLimit(prefix));
+        input.addEventListener("change", () => enforceTraitLimit(prefix));
+    });
+}
+
+function enforceTraitLimit(prefix) {
+    const status = getRadioValue(`${prefix}-status`);
+    if (status !== "각성" && status !== "일반") return;
+
+    const maxEach = status === "각성" ? 5 : 10;
+    const maxTotal = status === "각성" ? 12 : 17;
+    const inputs = [...document.querySelectorAll(`#${prefix}-special .trait-input`)];
+
+    let changedInput = null;
+
+    inputs.forEach(input => {
+        let value = parseInt(input.value, 10);
+
+        if (Number.isNaN(value) || value < 0) value = 0;
+        if (value > maxEach) value = maxEach;
+
+        input.value = value;
+    });
+
+    let total = inputs.reduce((sum, input) => {
+        return sum + (parseInt(input.value, 10) || 0);
+    }, 0);
+
+    if (total > maxTotal) {
+        const current = document.activeElement;
+
+        if (current && current.classList.contains("trait-input")) {
+            changedInput = current;
+        }
+
+        if (changedInput) {
+            const others = inputs
+                .filter(input => input !== changedInput)
+                .reduce((sum, input) => sum + (parseInt(input.value, 10) || 0), 0);
+
+            const allowed = Math.max(0, maxTotal - others);
+            changedInput.value = Math.min(
+                parseInt(changedInput.value, 10) || 0,
+                allowed
+            );
+        } else {
+            let remaining = maxTotal;
+
+            inputs.forEach(input => {
+                const value = parseInt(input.value, 10) || 0;
+                const allowed = Math.min(value, remaining);
+                input.value = allowed;
+                remaining -= allowed;
+            });
+        }
+    }
+}
+
+function getTraits(prefix) {
+    const status = getRadioValue(`${prefix}-status`);
+    if (status !== "각성" && status !== "일반") return [];
+
+    const data = traitData[prefix];
+    const traits = status === "각성" ? data.awakened : data.normal;
+
+    return traits.map((trait, index) => {
+        const input = document.getElementById(`${prefix}-trait-${index}`);
+        const value = input ? parseInt(input.value, 10) || 0 : 0;
+
+        return { name: trait, value };
+    }).filter(item => item.value > 0);
+}
+
+function formatTraits(prefix) {
+    const values = getTraits(prefix);
+
+    if (!values.length) return "";
+
+    return values
+        .map(item => `${item.name}${item.value}`)
+        .join(" / ");
+}
+
+/* =========================================================
+   전설장수
+   ========================================================= */
+
+function renderLegendInput(toggle) {
+    const prefix = toggle.dataset.prefix;
+    const name = toggle.dataset.name;
+    const element = toggle.dataset.element;
+
+    const containerId = legendGroups[element];
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let existing = document.getElementById(`legend-box-${prefix}`);
+
+    if (!toggle.checked) {
+        if (existing) existing.remove();
+        return;
+    }
+
+    if (existing) return;
+
+    existing = document.createElement("div");
+    existing.id = `legend-box-${prefix}`;
+    existing.className = "legend-input";
+
+    existing.innerHTML = `
+        <div class="legend-input-title">${escapeHtml(name)}</div>
+
+        <div class="inline-field">
+            <div class="inline-label">Level</div>
+            <input
+                id="legend-${prefix}-level"
+                class="text-input"
+                type="text"
+                inputmode="numeric"
+                placeholder="레벨"
+            >
+        </div>
+
+        <div class="inline-field">
+            <div class="inline-label">특성</div>
+            <input
+                id="legend-${prefix}-trait"
+                class="text-input"
+                type="text"
+                placeholder="예) 특성10"
+            >
+        </div>
+
+        <div class="inline-field">
+            <div class="inline-label">전설장비 강화</div>
+            <input
+                id="legend-${prefix}-equipment"
+                class="text-input"
+                type="text"
+                placeholder="예) 5강"
+            >
+        </div>
+    `;
+
+    container.appendChild(existing);
+}
+
+/* =========================================================
+   본캐
+   ========================================================= */
+
+function makeMainCard() {
+    const name = getValue("main-name");
+    const level = getValue("main-level");
+    const training = document.getElementById("training-book").checked;
+    const nationality = getRadioValue("nationality");
+    const reason = getValue("consult-reason");
+
+    let html = `
+        <div class="result-card">
+            <h3>① 본캐</h3>
+            <div class="result-card-content">
+    `;
+
+    if (name) html += makeRow("캐릭터명", name);
+    if (level) html += makeRow("Level", level);
+    if (training) html += makeRow("거상 수련서", "완료");
+    if (nationality) html += makeRow("국적", nationality);
+    html += makeReason("진로상담 신청 이유", reason);
+
+    if (
+        !name &&
+        !level &&
+        !training &&
+        !nationality &&
+        !reason
+    ) {
+        html += `<p class="empty-result">입력된 내용이 없습니다.</p>`;
+    }
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+/* =========================================================
+   정령
+   ========================================================= */
+
+function makeSpiritCard() {
+    const spirits = [
+        ["불의정령", "fire-spirit"],
+        ["물의정령", "water-spirit"],
+        ["땅의정령", "earth-spirit"],
+        ["뇌의정령", "thunder-spirit"],
+        ["바람의정령", "wind-spirit"]
+    ];
+
+    let html = `
+        <div class="result-card">
+            <h3>② 정령</h3>
+            <div class="result-card-content">
+    `;
+
+    let count = 0;
+
+    spirits.forEach(([label, name]) => {
+        const value = getRadioValue(name);
+        if (value) {
+            html += makeRow(label, value);
+            count++;
+        }
+    });
+
+    if (!count) {
+        html += `<p class="empty-result">선택된 정령이 없습니다.</p>`;
+    }
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+/* =========================================================
+   진법
+   ========================================================= */
+
+function makeFormationCard() {
+    const formations = [
+        ["불의진법", "fire-formation"],
+        ["물의진법", "water-formation"],
+        ["뇌의진법", "thunder-formation"],
+        ["풍의진법", "wind-formation"],
+        ["층진", "cheung-formation"]
+    ];
+
+    let html = `
+        <div class="result-card">
+            <h3>③ 진법</h3>
+            <div class="result-card-content">
+    `;
+
+    let count = 0;
+
+    formations.forEach(([label, name]) => {
+        const value = getRadioValue(name);
+
+        if (value && value !== "없음") {
+            html += makeRow(label, value);
+            count++;
+        }
+    });
+
+    if (document.getElementById("no-element-formation").checked) {
+        html += makeRow("속성진법", "없음");
+        count++;
+    }
+
+    if (!count) {
+        html += `<p class="empty-result">선택된 진법이 없습니다.</p>`;
+    }
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+/* =========================================================
+   가호
+   ========================================================= */
+
+function makeBlessingCard() {
+    const selected = getRadioValue("blessing");
+    let value = "";
+
+    if (selected === "입력") {
+        value = getValue("blessing-custom");
+    } else if (selected && selected !== "없음") {
+        value = selected;
+    }
+
+    let html = `
+        <div class="result-card">
+            <h3>④ 가호</h3>
+            <div class="result-card-content">
+    `;
+
+    if (value) {
+        html += makeRow("가호", value);
+    } else {
+        html += `<p class="empty-result">선택된 가호가 없습니다.</p>`;
+    }
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+/* =========================================================
+   사천왕
+   ========================================================= */
+
+const kingData = [
+    ["jikuk", "지국천왕"],
+    ["damun", "다문천왕"],
+    ["jeungjang", "증장천왕"],
+    ["gwangmok", "광목천왕"]
+];
+
+function hasKingData(prefix) {
+    return Boolean(
+        getValue(`${prefix}-level`) ||
+        getRadioValue(`${prefix}-status`) ||
+        getRadioValue(`${prefix}-weapon`) ||
+        getRadioValue(`${prefix}-item`) ||
+        getRadioValue(`${prefix}-star`) ||
+        getValue(`${prefix}-star-input`) ||
+        getValue(`${prefix}-equipment`) ||
+        formatTraits(prefix)
+    );
+}
+
+function makeKingCard(prefix, name) {
+    if (!hasKingData(prefix)) return "";
+
+    let html = `
+        <div class="result-card">
+            <h3>⑤ ${escapeHtml(name)}</h3>
+            <div class="result-card-content">
+    `;
+
+    const level = getValue(`${prefix}-level`);
+    const status = getRadioValue(`${prefix}-status`);
+    const weapon = getRadioValue(`${prefix}-weapon`);
+    const item = getRadioValue(`${prefix}-item`);
+    const starType = getRadioValue(`${prefix}-star`);
+    const starInput = getValue(`${prefix}-star-input`);
+    const equipment = getValue(`${prefix}-equipment`);
+    const traits = formatTraits(prefix);
+
+    if (level) html += makeRow("Level", level);
+    if (status) html += makeRow("상태", status);
+    if (weapon) html += makeRow("무기보유", weapon);
+    if (item) html += makeRow("사천왕부", item);
+
+    if (starType === "입력") {
+        if (starInput) html += makeRow("별자리", starInput);
+    } else if (starType && starType !== "없음") {
+        html += makeRow("별자리", starType);
+    }
+
+    if (traits) html += makeRow("특성", traits);
+    if (equipment) html += makeRow("착용장비", equipment);
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+/* =========================================================
+   명왕
+   ========================================================= */
+
+const mawangData = [
+    ["hangsamse", "항삼세명왕"],
+    ["geumgang", "금강야차명왕"],
+    ["gundari", "군다리명왕"],
+    ["daewideok", "대위덕명왕"],
+    ["budong", "부동명왕"]
+];
+
+function hasMawangData(prefix) {
+    return Boolean(
+        getValue(`${prefix}-level`) ||
+        getRadioValue(`${prefix}-status`) ||
+        getRadioValue(`${prefix}-weapon`) ||
+        getRadioValue(`${prefix}-item`) ||
+        getRadioValue(`${prefix}-star`) ||
+        getValue(`${prefix}-star-input`) ||
+        getValue(`${prefix}-equipment`) ||
+        formatTraits(prefix)
+    );
+}
+
+function makeMawangCard(prefix, name) {
+    if (!hasMawangData(prefix)) return "";
+
+    let html = `
+        <div class="result-card">
+            <h3>⑥ ${escapeHtml(name)}</h3>
+            <div class="result-card-content">
+    `;
+
+    const level = getValue(`${prefix}-level`);
+    const status = getRadioValue(`${prefix}-status`);
+    const weapon = getRadioValue(`${prefix}-weapon`);
+    const item = getRadioValue(`${prefix}-item`);
+    const starType = getRadioValue(`${prefix}-star`);
+    const starInput = getValue(`${prefix}-star-input`);
+    const equipment = getValue(`${prefix}-equipment`);
+    const traits = formatTraits(prefix);
+
+    if (level) html += makeRow("Level", level);
+    if (status) html += makeRow("상태", status);
+    if (weapon) html += makeRow("무기보유", weapon);
+    if (item) html += makeRow("명왕부", item);
+
+    if (starType === "입력") {
+        if (starInput) html += makeRow("별자리", starInput);
+    } else if (starType && starType !== "없음") {
+        html += makeRow("별자리", starType);
+    }
+
+    if (traits) html += makeRow("특성", traits);
+    if (equipment) html += makeRow("착용장비", equipment);
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    return html;
+}
+
+/* =========================================================
+   전설장수 결과
+   속성별로 하나의 카드
+   ========================================================= */
+
+function makeLegendCards() {
+    const selected = [...document.querySelectorAll(".legend-toggle:checked")];
+
+    if (!selected.length) return "";
+
+    const grouped = {
+        "火": [],
+        "水": [],
+        "雷": [],
+        "風": [],
+        "地": []
+    };
+
+    selected.forEach(toggle => {
+        const prefix = toggle.dataset.prefix;
+        const name = toggle.dataset.name;
+        const element = toggle.dataset.element;
+
+        const level = getValue(`legend-${prefix}-level`);
+        const trait = getValue(`legend-${prefix}-trait`);
+        const equipment = getValue(`legend-${prefix}-equipment`);
+
+        grouped[element].push({
+            name,
+            level,
+            trait,
+            equipment
+        });
+    });
+
+    let html = "";
+
+    Object.entries(grouped).forEach(([element, list]) => {
+        if (!list.length) return;
+
+        html += `
+            <div class="result-card">
+                <h3>⑦ 전설장수 - ${escapeHtml(element)}속성</h3>
+                <div class="result-card-content">
+        `;
+
+        list.forEach(item => {
+            html += `
+                <div class="result-subcard">
+                    <h4>${escapeHtml(item.name)}</h4>
+            `;
+
+            if (item.level) html += makeRow("Level", item.level);
+            if (item.trait) html += makeRow("특성", item.trait);
+            if (item.equipment) html += makeRow("전설장비 강화", item.equipment);
+
+            if (!item.level && !item.trait && !item.equipment) {
+                html += `<p class="empty-result">입력된 내용이 없습니다.</p>`;
+            }
+
+            html += `
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    return html;
+}
+
+/* =========================================================
+   전체 출력
+   ========================================================= */
+
+function makeResult() {
+    const result = document.getElementById("result");
+
+    let html = `<div class="result-grid">`;
+
+    html += makeMainCard();
+    html += makeSpiritCard();
+    html += makeFormationCard();
+    html += makeBlessingCard();
+
+    kingData.forEach(([prefix, name]) => {
+        html += makeKingCard(prefix, name);
+    });
+
+    mawangData.forEach(([prefix, name]) => {
+        html += makeMawangCard(prefix, name);
+    });
+
+    html += makeLegendCards();
+
+    html += `</div>`;
+
+    result.innerHTML = html;
+}
+
+/* =========================================================
+   복사
+   ========================================================= */
+
+async function copyChecklist() {
+    const result = document.getElementById("result");
+    const text = result.innerText.trim();
+
+    if (
+        !text ||
+        text.includes("선택 후 상단의 출력하기 버튼을 눌러주세요.")
+    ) {
+        alert("복사할 체크리스트가 없습니다.");
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(text);
+        alert("진로상담 체크리스트가 복사되었습니다.");
+    } catch (error) {
+        console.error(error);
+        alert("복사에 실패했습니다.");
+    }
+}
+
+/* =========================================================
+   이미지 저장
+   ========================================================= */
+
+function sanitizeFileName(name) {
+    return name
+        .replace(/[\\\/:*?"<>|]/g, "")
+        .trim();
+}
+
+async function saveChecklistImage() {
+    const result = document.getElementById("result");
+    const text = result.innerText.trim();
+
+    if (
+        !text ||
+        text.includes("선택 후 상단의 출력하기 버튼을 눌러주세요.")
+    ) {
+        alert("저장할 체크리스트가 없습니다.");
+        return;
+    }
+
+    const mainName = getValue("main-name");
+    const characterName = mainName
+        ? sanitizeFileName(mainName)
+        : "캐릭터명없음";
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const date = `${year}${month}${day}`;
+
+    const fileName =
+        `진로상담_체크리스트_${date}_${characterName}.png`;
+
+    try {
+        const exportArea = document.getElementById("checklist-export");
+
+        const canvas = await html2canvas(exportArea, {
+            backgroundColor: "#ffffff",
+            scale: 2,
+            useCORS: true
+        });
+
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+
+    } catch (error) {
+        console.error(error);
+        alert("이미지 저장에 실패했습니다.");
+    }
+}
+
+/* =========================================================
+   초기화
+   ========================================================= */
+
+function resetAll() {
+    const confirmed =
+        confirm("입력한 모든 내용을 초기화하시겠습니까?");
+
+    if (!confirmed) return;
+
+    document.querySelectorAll("input").forEach(input => {
+        if (input.type === "checkbox" || input.type === "radio") {
+            input.checked = false;
+        } else {
+            input.value = "";
+        }
+    });
+
+    document.querySelectorAll("textarea").forEach(textarea => {
+        textarea.value = "";
+    });
+
+    document.querySelectorAll(".trait-container").forEach(container => {
+        container.innerHTML = "";
+        container.style.display = "none";
+    });
+
+    document.querySelectorAll("[id^='legend-box-']").forEach(box => {
+        box.remove();
+    });
+
+    document.getElementById("result").innerHTML = `
+        <p class="empty-result">
+            선택 후 상단의 출력하기 버튼을 눌러주세요.
+        </p>
+    `;
+}
+
+/* =========================================================
+   초기 상태
+   ========================================================= */
+
+window.addEventListener("DOMContentLoaded", () => {
+    [
+        "jikuk", "damun", "jeungjang", "gwangmok",
+        "hangsamse", "geumgang", "gundari", "daewideok", "budong"
+    ].forEach(prefix => {
+        renderStarInput(prefix);
+
+        const status = getRadioValue(`${prefix}-status`);
+        if (status === "각성" || status === "일반") {
+            renderTraits(prefix);
+        }
+    });
+});
+</script>
+
+</body>
+</html>
